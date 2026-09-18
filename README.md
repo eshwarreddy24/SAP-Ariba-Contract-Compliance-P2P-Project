@@ -62,7 +62,7 @@ Configured **Senior Strategy Consultant** as a service item with:
 - Supplier part number: **SVCSTRAT0001**
 - Receiving required: **Yes**
 
-![Service item pricing](assets/01-service-item-pricing.jpg)
+![Service item pricing](assets/01_service_item_pricing.png)
 
 ### 2. Contract Limits & Controls
 
@@ -74,7 +74,7 @@ Configured contract-level controls including:
 - Receiving allowed: **Yes**
 - Release required: **No**
 
-![Contract limits](assets/02-contract-limits.jpg)
+![Contract limits](assets/02_contract_limits.png)
 
 ### 3. Additional Pricing Terms
 
@@ -83,7 +83,7 @@ Configured additional commercial terms:
 - **Corporate Lodging:** USD 20,000, 10% tolerance, non-recurring
 - **Food:** maximum amount USD 10,000, 10% tolerance
 
-![Pricing terms summary](assets/06-pricing-terms-summary.jpg)
+![Pricing terms summary](assets/06_pricing_terms_summary.png)
 
 ### 4. Milestone Configuration & Verification
 
@@ -94,15 +94,15 @@ Configured the **Project Plan Complete** milestone:
 - Tolerance: **0%**
 - Outcome: successfully verified / submitted
 
-![Milestone configuration](assets/03-milestone-configuration.jpg)
+![Milestone configuration](assets/03_milestone_configuration.png)
 
-![Milestone verification](assets/04-milestone-verification.jpg)
+![Milestone verification](assets/04_milestone_verification.png)
 
 ### 5. Contract Summary Validation
 
 Reviewed the contract summary and confirmed the key definition, dates, hierarchy, purchasing controls, and commercial settings before downstream processing.
 
-![Contract summary](assets/05-contract-summary.jpg)
+![Contract summary](assets/05_contract_summary.png)
 
 ### 6. Contract-Based Receiving
 
@@ -112,9 +112,9 @@ Created a receipt against the contract for **60 hours** of Senior Strategy Consu
 - Receipt status: **Approved**
 - Final status: **Receiving - Done**
 
-![Receipt for 60 hours](assets/07-receipt-60-hours.jpg)
+![Receipt for 60 hours](assets/07_receipt_60_hours.png)
 
-![Receiving completed](assets/08-receiving-done.jpg)
+![Receiving completed](assets/08_receiving_done.png)
 
 ## Validation Performed
 
@@ -170,14 +170,14 @@ SAP-Ariba-Contract-Compliance-P2P-Project/
 ├── SAP_LEARNING_CREDENTIALS.md
 ├── PROJECT_NOTES.md
 └── assets/
-    ├── 01-service-item-pricing.jpg
-    ├── 02-contract-limits.jpg
-    ├── 03-milestone-configuration.jpg
-    ├── 04-milestone-verification.jpg
-    ├── 05-contract-summary.jpg
-    ├── 06-pricing-terms-summary.jpg
-    ├── 07-receipt-60-hours.jpg
-    └── 08-receiving-done.jpg
+    ├── 01_service_item_pricing.png
+    ├── 02_contract_limits.png
+    ├── 03_milestone_configuration.png
+    ├── 04_milestone_verification.png
+    ├── 05_contract_summary.png
+    ├── 06_pricing_terms_summary.png
+    ├── 07_receipt_60_hours.png
+    └── 08_receiving_done.png
 ```
 
 ## Disclaimer
