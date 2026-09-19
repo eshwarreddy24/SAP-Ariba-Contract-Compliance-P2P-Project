@@ -1,255 +1,288 @@
-# SAP Ariba Contract Compliance - P2P Implementation Case Study
+# SAP Ariba Contract Compliance & P2P Controls
 
-**Hands-on implementation completed in SAP Ariba Live Access | Sep 2026**
+**Hands-on SAP Ariba implementation case study | Completed Sep 2026**
 
-This repository documents the contract-compliance solution I configured and executed in SAP Ariba from contract setup through purchasing, contract-based receiving, milestone verification, and contract amendment.
+I built and tested a contract-compliance flow covering supplier, commodity, item and service contracts. The project connects contract configuration to real transaction behavior: negotiated pricing, tiered discounts, requisition/PO creation, Auto-Catalog pricing, service receiving, milestone verification and contract amendment.
 
-The work was performed in a **SAP Ariba training/test environment**, but the configuration and transaction flow mirror the controls used in a production Procure-to-Pay process: contract hierarchy, negotiated pricing, tiered discounts, release controls, spend limits, service receiving, and lifecycle management.
+## Results at a glance
 
-## Project Results
-
-| Metric | Result |
+| What I delivered | Measured result |
 |---|---:|
 | Contract models configured | **4** |
-| Contract amendment versions created | **1** |
-| Supplier-level discount | **2%** |
-| Commodity discount tiers | **3%, 4%, 5%** |
-| Item-level quantity tiers | **USD 47.50 / USD 45.00** |
-| Submitted contract-based requisition | **USD 6,750** |
+| Supplier flat discount | **2%** |
+| Commodity discount tiers | **3% / 4% / 5%** |
+| Item quantity price tiers | **USD 47.50 / USD 45.00** |
+| Submitted contract requisition | **USD 6,750** |
 | Purchase order generated | **1** |
-| Service contract maximum | **USD 500,000** |
-| Overall service-contract tolerance | **3%** |
+| Service contract ceiling | **USD 500,000** |
 | Consultant rate | **USD 250/hour** |
-| Consultant quantity ceiling | **1,000 hours** |
-| Consultant hours received | **60 hours** |
-| Value represented by receipt | **USD 15,000** |
+| Consultant quantity limit | **1,000 hours** |
+| Service received | **60 hours** |
+| Receipt value at contract rate | **USD 15,000** |
 | Lodging control | **USD 20,000 + 10% tolerance** |
 | Food spend control | **USD 10,000 + 10% tolerance** |
-| Milestone control | **USD 10,000, 0% tolerance** |
-| Minimum commitment after amendment | **USD 10,000** |
-| Auto-Catalog negotiated item price | **USD 15.00** |
-| Auto-Catalog cart price after supplier discount | **USD 14.70** |
+| Contract milestone | **USD 10,000, 0% tolerance** |
+| Minimum commitment added by amendment | **USD 10,000** |
+| Auto-Catalog negotiated price | **USD 15.00 each** |
+| Auto-Catalog checkout price | **USD 14.70 each** |
 
-## What I Built
+## Business scenario
 
-### 1. Supplier-Level Master Agreement
+The requirement was to control purchases from one supplier at several contract levels while proving that the correct commercial terms flow into downstream purchasing and receiving.
 
-Created a supplier-level master agreement for Schafer Office with a **2% flat discount** that applies to eligible catalog and non-catalog purchases.
+I implemented:
 
-Key controls:
+1. a **Supplier-Level Master Agreement** for the supplier-wide discount;
+2. a **Commodity-Level Subagreement** for spend-based category discounts;
+3. an **Item-Level Subagreement** for quantity-based item pricing and an Auto-Catalog item;
+4. a **Standalone Service Contract** for consulting services, expenses, milestones and receiving;
+5. a **contract amendment** adding a minimum commitment after closure.
 
-- Supplier-level contract
-- Master Agreement hierarchy
-- Release required: Yes
-- Non-catalog discount terms enabled
-- Subagreement accumulators enabled
-- Overall maximum: USD 500,000
-- Overall tolerance: 3%
+## 1. Supplier-Level Master Agreement
+
+Configured the supplier master agreement with:
+
+- **2% flat supplier discount**
+- **USD 500,000** overall maximum
+- **3%** tolerance
+- Release required: **Yes**
+- Discount terms applied to non-catalog items: **Yes**
+- Subagreement accumulators: **Yes**
 - Release access restricted to the authorized user
 
-After downstream purchasing activity, the contract showed:
+After the item-level purchasing transaction, the master agreement reflected:
 
-- **Amount spent: USD 6,750**
-- **Amount available: USD 493,250**
-- **98.65% of the contract value remaining**
+- **USD 6,750 amount spent**
+- **USD 493,250 amount available**
+- **98.65% remaining**
 
-### 2. Commodity-Level Subagreement
+This proved that downstream spend was accumulating against the parent agreement.
 
-Created a commodity subagreement under the supplier master agreement for **Desk Drawer Organizers**.
+## 2. Commodity-Level Subagreement
 
-Configured amount-based discount tiers:
+Built a subagreement for the **Desk Drawer Organizers** commodity.
 
-| Minimum Spend | Discount |
+### Spend-based tiers
+
+| Minimum accumulated amount | Discount |
 |---:|---:|
 | USD 0 | **3%** |
 | USD 1,000 | **4%** |
 | USD 5,000 | **5%** |
 
-The terms were intentionally configured **without compounding the parent discount**, while spend accumulators were rolled to the parent agreement.
+Controls used:
 
-### 3. Item-Level Subagreement
+- Hierarchy: **Subagreement**
+- Parent: supplier master agreement
+- Pricing type: **Amount Based Volume Discount**
+- Parent pricing compounding: **No**
+- Add accumulators to parent: **Yes**
 
-Created an item-level subagreement for Schafer Office with item-specific pricing and quantity-based tiers.
+The design keeps the category discount independent while still rolling spend into the supplier master agreement.
 
-For **Franklin Electronic Wordmaster Deluxe**:
+## 3. Item-Level Subagreement
 
-- Item maximum quantity: **4,000**
-- Item tolerance: **2%**
-- Quantity-based volume pricing
-- Per-order scope
-- Quantity 51+: **USD 47.50**
-- Quantity 101+: **USD 45.00**
+Configured **Franklin Electronic Wordmaster Deluxe** with quantity controls and per-order volume pricing.
 
-I validated the pricing through a requisition:
+### Item controls
 
-| Test Quantity | Observed Unit Price | Applied Logic |
+- Maximum quantity: **4,000**
+- Tolerance: **2%**
+- Pricing method: **Quantity Based Volume Pricing**
+- Scope: **Per Order**
+- Quantity **51+**: **USD 47.50**
+- Quantity **101+**: **USD 45.00**
+- Add accumulators to parent: **Yes**
+
+### Transaction test
+
+| Quantity tested | Unit price observed | Contract behavior |
 |---:|---:|---|
-| 1 | **USD 48.95** | Parent supplier discount |
-| 51 | **USD 47.50** | Item-level quantity tier |
-| 150 | **USD 45.00** | Higher item-level quantity tier |
+| 1 | **USD 48.95** | Parent 2% supplier discount applied |
+| 51 | **USD 47.50** | First item-level quantity tier applied |
+| 150 | **USD 45.00** | Higher item-level tier applied |
 
-The 150-unit requisition produced a total of **USD 6,750** and generated a contract-based purchase order.
+The 150-unit requisition totaled **USD 6,750**, was submitted, approved and generated a contract-based purchase order.
 
-### 4. Auto-Catalog Subscription Item
+## 4. Auto-Catalog Item Validation
 
-Configured a non-catalog item as part of the item-level contract:
+Added a non-catalog contract item:
 
-- Item: Swingline Stapler (Red)
-- Supplier part number: SWINGRED
-- Negotiated price: **USD 15.00 each**
-- Auto-Catalog subscription enabled
+- Item: **Swingline Stapler (Red)**
+- Supplier part number: **SWINGRED**
+- UOM: **each**
+- Negotiated price: **USD 15.00**
+- Contract subscription creation: **enabled**
 
-After contract activation, the item became searchable in the catalog.
+After activation, the item appeared in catalog search.
 
-Observed validation:
+### Pricing result
 
 - Catalog price: **USD 15.00**
-- Cart price: **USD 14.70**
+- Checkout price: **USD 14.70**
 - Difference: **USD 0.30**
 - Effective discount: **2%**
-- The cart selected the supplier-level master agreement for the final price
 
-This confirmed that the generated catalog subscription and parent contract pricing were both active.
+The checkout selected the supplier-level contract, confirming that the generated catalog item was active and the parent supplier discount was still being evaluated.
 
-### 5. Standalone Service Contract
+The test requisition was deleted instead of being submitted.
 
-Configured a standalone item-level consulting contract with **no release required**, allowing transactions directly against the contract.
+## 5. Standalone Service Contract
 
-Contract controls:
+Built a no-release consulting contract so services could be received directly against the contract.
 
-- Maximum contract value: **USD 500,000**
-- Tolerance: **3%**
-- Invoicing against contract: Yes
-- Receiving against contract: Yes
-- Release required: No
+### Header and financial controls
 
-Service line:
+- Contract type: **Item Level**
+- Hierarchy: **Standalone Agreement**
+- Maximum limit: **USD 500,000**
+- Overall tolerance: **3%**
+- Release required: **No**
+- Invoicing against contract: **Yes**
+- Receiving against contract: **Yes**
 
-- Senior Strategy Consultant
+![Service contract summary](assets/05_contract_summary.png)
+
+### Consultant service line
+
+- Service: **Senior Strategy Consultant**
 - Rate: **USD 250/hour**
 - Maximum quantity: **1,000 hours**
 - Quantity tolerance: **10%**
-- Receiving required: Yes
-- Supplier part number: SVCSTRAT0001
+- Receiving required: **Yes**
+- Supplier part number: **SVCSTRAT0001**
 
-Additional commercial controls:
+![Service item pricing](assets/01_service_item_pricing.png)
 
-- Corporate Lodging: **USD 20,000**, 10% tolerance, non-recurring
-- Food: **USD 10,000 maximum**, 10% tolerance
+### Additional commercial controls
 
-### 6. Milestone Verification
+- Corporate Lodging: **USD 20,000**, **10% tolerance**, non-recurring
+- Food: **USD 10,000 maximum**, **10% tolerance**
 
-Configured and verified the **Project Plan Complete** milestone:
+![Pricing terms](assets/06_pricing_terms_summary.png)
 
-- Milestone amount: **USD 10,000**
+## 6. Milestone Control
+
+Configured the **Project Plan Complete** milestone:
+
+- Amount: **USD 10,000**
 - Tolerance: **0%**
-- Final due date used in the system: **20 Sep 2026**
-- Completion and verification recorded: **19 Sep 2026**
+- Final valid due date: **20 Sep 2026**
+- Completion date entered: **19 Sep 2026**
+- Verification date entered: **19 Sep 2026**
 
-The milestone moved through the verification step successfully.
+The milestone was marked completed and submitted through the verification workflow.
 
-### 7. Contract-Based Service Receiving
+![Milestone configuration](assets/03_milestone_configuration.png)
 
-Processed service receiving for **60 consultant hours**.
+![Milestone verification](assets/04_milestone_verification.png)
 
-Calculation:
+## 7. Service Receiving
+
+Received **60 hours** of consulting service against the standalone contract.
+
+At the negotiated rate:
 
 **60 hours x USD 250/hour = USD 15,000**
 
-The receipt was submitted and the receiving process returned the final **Receiving - Done** confirmation.
+The receipt was submitted and the system returned **Receiving - Done**, proving the contract-to-receipt flow.
 
-This validates the connection between:
+![60-hour receipt](assets/07_receipt_60_hours.png)
 
-**Contract -> negotiated service rate -> receiving requirement -> service receipt**
+![Receiving complete](assets/08_receiving_done.png)
 
-### 8. Contract Lifecycle Management
+## 8. Contract Lifecycle Management
 
-Completed a lifecycle change on the supplier master agreement:
+I then tested contract lifecycle control on the supplier master agreement:
 
-1. Manually closed the supplier-level contract.
-2. Opened the associated Contract Request.
-3. Created a change version.
-4. Added a **USD 10,000 minimum commitment**.
-5. Submitted the amendment.
-6. Confirmed the new contract version and its status.
+1. manually closed the supplier-level contract;
+2. opened the associated Contract Request;
+3. created a change version;
+4. changed **Minimum Commitment to USD 10,000**;
+5. submitted the amendment;
+6. verified the created version and final status.
 
-Because the previous version had been manually closed, SAP Ariba automatically kept the amended version closed. This behavior was captured and verified rather than being treated as an error.
+The amended version remained **Closed** because SAP Ariba automatically inherited the state of the manually closed previous version. I verified this system behavior rather than reopening or overriding it.
 
-## End-to-End Process Executed
+## End-to-end flow
 
 ```text
 Supplier Master Agreement
-        |
-        +-- Commodity Subagreement -> spend-based discount tiers
-        |
-        +-- Item Subagreement -> quantity-based item pricing
-                |
-                +-- Requisition -> Purchase Order
-                |
-                +-- Auto-Catalog subscription validation
+  ├─ 2% supplier discount
+  ├─ USD 500K limit / 3% tolerance
+  │
+  ├─ Commodity Subagreement
+  │   └─ 3% / 4% / 5% spend tiers
+  │
+  └─ Item Subagreement
+      ├─ Quantity pricing: USD 47.50 / USD 45.00
+      ├─ Requisition: USD 6,750
+      ├─ Purchase Order generated
+      └─ Auto-Catalog item: USD 15.00 -> USD 14.70
 
 Standalone Service Contract
-        |
-        +-- Service rate and quantity controls
-        +-- Lodging and food spend controls
-        +-- Milestone verification
-        +-- 60-hour service receipt
+  ├─ USD 250/hour consultant
+  ├─ 1,000-hour ceiling
+  ├─ USD 20K lodging control
+  ├─ USD 10K food control
+  ├─ USD 10K milestone
+  └─ 60 hours received = USD 15K at contract rate
 
-Contract Lifecycle
-        |
-        +-- Close contract
-        +-- Change contract request
-        +-- Add USD 10,000 minimum commitment
-        +-- Verify amended version
+Lifecycle Management
+  └─ Close -> Change -> USD 10K Minimum Commitment -> New Version
 ```
 
-## Evidence
+## What this project demonstrates
 
-The screenshots below are curated from the execution record captured during the project. Training-environment footer details were cropped before publishing.
+- Building contract hierarchy rather than configuring a single isolated contract
+- Translating commercial terms into executable SAP Ariba pricing controls
+- Testing contract selection at different quantities
+- Validating parent-versus-child pricing behavior
+- Connecting requisition execution to parent contract spend
+- Generating a purchase order from a contract-backed requisition
+- Turning a non-catalog contract item into a searchable Auto-Catalog item
+- Processing service receiving against a no-release contract
+- Verifying a financial milestone
+- Managing contract closure and amendment/versioning
 
-### Contract configuration
+## Skills demonstrated
 
-![Contract configuration evidence](evidence/01_contract_configuration.jpg)
+**SAP Ariba:** Contract Compliance, Buying, Requisitions, Purchase Orders, Receiving, Auto-Catalog, Contract Amendments
 
-### Purchasing, Auto-Catalog and lifecycle validation
+**Contract configuration:** Supplier Level, Commodity Level, Item Level, Master Agreements, Subagreements, Standalone Agreements, Limits, Tolerances, Access Controls, Accumulators
 
-![Execution and validation evidence](evidence/02_execution_validation.jpg)
+**Commercial controls:** Flat Discounts, Amount-Based Volume Discounts, Quantity-Based Volume Pricing, Service Rates, Expense Limits, Milestones, Minimum Commitments
 
-### Service contract and receiving
+**P2P execution:** Contract Selection, Requisition Validation, PO Generation, Service Receipt, Contract Spend Tracking
 
-![Service contract evidence](evidence/03_service_contract_receiving.jpg)
+## Repository structure
 
-## Skills Applied
+```text
+SAP-Ariba-Contract-Compliance-P2P-Project/
+├── README.md
+├── PROJECT_NOTES.md
+├── SAP_LEARNING_CREDENTIALS.md
+└── assets/
+    ├── 01_service_item_pricing.png
+    ├── 02_contract_limits.png
+    ├── 03_milestone_configuration.png
+    ├── 04_milestone_verification.png
+    ├── 05_contract_summary.png
+    ├── 06_pricing_terms_summary.png
+    ├── 07_receipt_60_hours.png
+    └── 08_receiving_done.png
+```
 
-- SAP Ariba Contract Compliance
-- Supplier, commodity and item-level contracts
-- Master Agreement and Subagreement hierarchy
-- Standalone service contracts
-- Contract limits and tolerances
-- Supplier flat discounts
-- Amount-based tiered discounts
-- Quantity-based volume pricing
-- Contract accumulators
-- Release access controls
-- Requisition and purchase-order validation
-- Auto-Catalog subscription creation
-- Service procurement
-- Contract-based receiving
-- Milestone management
-- Contract closure and amendment
-- Procure-to-Pay control validation
+## Evidence and scope
 
-## Repository Files
+The screenshots are from my execution in an **SAP Ariba Live Access / test environment**. This repository is a hands-on implementation case study, not a production-client claim.
 
-- **README.md** - business case, configuration, metrics and outcomes
-- **PROJECT_NOTES.md** - detailed implementation record and validation data
-- **SAP_LEARNING_CREDENTIALS.md** - SAP Learning verification links
-- **evidence/** - curated screenshots from the completed configuration and transactions
+The evidence covers contract configuration, pricing tests, requisition/PO behavior, Auto-Catalog validation, milestone verification, service receiving, contract closure and amendment. A completed production invoice or invoice reconciliation is **not** claimed here.
 
-## Scope and Evidence Boundary
+The SAP course/exercise material itself is not reproduced or uploaded.
 
-This is an independent hands-on portfolio project completed in an SAP Ariba learning environment. It is **not presented as a production client implementation**.
+---
 
-The project evidence supports contract configuration, contract pricing, requisition/PO validation, Auto-Catalog behavior, milestone verification, contract-based receiving, and contract lifecycle management. It does **not** claim that a production invoice or invoice reconciliation was completed in this project.
+**Project completed by Eshwar Reddy | Sep 2026**
 
 SAP and SAP Ariba are trademarks of SAP SE or its affiliates.
