@@ -2,6 +2,8 @@
 
 **Hands-on SAP Ariba implementation case study | Completed Sep 2026**
 
+**Project owner:** [Eshwar Reddy](https://github.com/eshwarreddy24) · [LinkedIn](https://www.linkedin.com/in/eshwar-reddy-gali-/)
+
 I built and tested a contract-compliance flow covering supplier, commodity, item and service contracts. The project connects contract configuration to real transaction behavior: negotiated pricing, tiered discounts, requisition/PO creation, Auto-Catalog pricing, service receiving, milestone verification and contract amendment.
 
 ## Results at a glance
