@@ -1,25 +1,15 @@
-# SAP Ariba Contract Compliance & P2P Portfolio
+# SAP Ariba P2P Portfolio - Archive
 
-**SAP Ariba Live Access | Sep 2026**
+This original combined repository is retained so earlier evidence and project files are not lost.
 
-This repository now contains **two separate hands-on SAP Ariba projects**, each focused on a different Procure-to-Pay capability.
+The work is now presented as **two separate projects**:
 
-## Project 1 — Contract Compliance, Catalog & PO Validation
+1. **Contract Compliance, Catalog & PO Validation**  
+   https://github.com/eshwarreddy24/SAP-Ariba-Contract-Compliance-Catalog-PO
 
-[Open Project 1](projects/contract-compliance-catalog-po/README.md)
+2. **Service Contract, Receiving & Lifecycle Controls**  
+   https://github.com/eshwarreddy24/SAP-Ariba-Service-Contract-Receiving-Lifecycle
 
-Built a 3-level contract hierarchy and validated supplier, commodity and item pricing through catalog search, requisition testing and purchase-order generation.
+Use the two repositories above for the current project documentation, screenshots and resume links.
 
-**Key results:** 2% supplier discount · 3%/4%/5% commodity tiers · USD 47.50 / USD 45.00 item breaks · USD 6,750 requisition · USD 15.00 → USD 14.70 Auto-Catalog checkout.
-
-## Project 2 — Service Contract, Receiving & Lifecycle Controls
-
-[Open Project 2](projects/service-contract-receiving-lifecycle/README.md)
-
-Built a standalone service contract with financial controls, processed service receiving, verified a milestone and completed a contract amendment.
-
-**Key results:** USD 500K ceiling · 3% tolerance · USD 250/hour · 60 hours received = USD 15,000 · USD 10K milestone · USD 10K minimum commitment amendment.
-
----
-
-The work was completed in an SAP Ariba learning/test environment and is presented as a hands-on implementation case study, not a production-client implementation.
+> Training portfolio work completed in SAP Ariba Live Access. No production client data is included.
